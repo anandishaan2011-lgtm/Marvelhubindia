@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARVEL HUB INDIA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        marvel: {
+                            red: '#E62429',
+                            darkRed: '#B51B1F',
+                            black: '#0b0f19',
+                            card: '#131c2e',
+                            border: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E62429;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-marvel-black text-slate-100 min-h-screen flex flex-col selection:bg-marvel-red selection:text-white">
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-marvel-card border border-marvel-red text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-marvel-red text-xl"></i>
+        <span id="toast-msg" class="font-semibold text-sm">Action successful!</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-marvel-black/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('viewer')">
+                <div class="bg-marvel-red text-white font-black text-xl px-3 py-2 rounded-lg shadow-lg tracking-wider flex items-center space-x-1">
+                    <span>MARVEL</span>
+                    <span class="bg-black px-1.5 py-0.5 rounded text-xs ml-1 font-bold text-marvel-red">HUB</span>
+                </div>
+                <div>
+                    <h1 class="font-black tracking-wider text-lg sm:text-xl text-white flex items-center gap-2">
+                        MARVEL HUB INDIA
+                        <span class="text-[10px] bg-red-600/20 text-marvel-red border border-marvel-red/30 px-2 py-0.5 rounded-full font-semibold uppercase">Official</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Ultimate Cinematic Wallpapers</p>
+                </div>
+            </div>
+
+            <!-- Navigation Actions -->
+            <div class="flex items-center space-x-3">
+                <button id="nav-viewer-btn" onclick="switchView('viewer')" class="px-4 py-2 rounded-lg font-bold text-sm bg-marvel-red text-white shadow-md hover:bg-marvel-darkRed transition flex items-center space-x-2">
+                    <i class="fa-solid fa-compass"></i>
+                    <span class="hidden sm:inline">Explore Wallpapers</span>
+                </button>
+                <button id="nav-dev-btn" onclick="handleDevNavClick()" class="px-4 py-2 rounded-lg font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-marvel-red"></i>
+                    <span id="dev-btn-text">Developer Portal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow">
+
+        <!-- ================= VIEWER SECTION ================= -->
+        <section id="viewer-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-red-950 via-slate-900 to-black p-8 sm:p-12 border border-marvel-red/30 mb-8 shadow-2xl">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#E62429_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-marvel-red/20 text-marvel-red border border-marvel-red/40 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">HD & 4K Collections</span>
+                    <h2 class="text-3xl sm:text-5xl font-black text-white mt-4 mb-3 tracking-tight">Unleash the Multiverse on Your Screen</h2>
+                    <p class="text-slate-300 text-sm sm:text-base mb-6">Explore breathtaking Marvel cinematic wallpapers optimized for both Mobile and Laptop devices. Completely free downloads with no restrictions.</p>
+                    
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" oninput="filterWallpapers()" placeholder="Search heroes, movies, villains (e.g. Iron Man, Avengers)..." class="w-full bg-slate-900/90 border border-slate-700 text-white pl-12 pr-4 py-3.5 rounded-xl focus:outline-none focus:border-marvel-red text-sm shadow-inner transition">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8 bg-marvel-card p-4 rounded-xl border border-slate-800">
+                <!-- Device Filter Tabs -->
+                <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-800 self-start md:self-auto">
+                    <button onclick="setDeviceFilter('all')" id="dev-tab-all" class="device-tab px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition bg-marvel-red text-white shadow">
+                        <i class="fa-solid fa-globe mr-1"></i> All Devices
+                    </button>
+                    <button onclick="setDeviceFilter('mobile')" id="dev-tab-mobile" class="device-tab px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-mobile-screen mr-1"></i> Mobile (📱)
+                    </button>
+                    <button onclick="setDeviceFilter('laptop')" id="dev-tab-laptop" class="device-tab px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-laptop mr-1"></i> Laptop (💻)
+                    </button>
+                </div>
+
+                <!-- Category Pills -->
+                <div id="category-pills" class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
+                    <!-- Dynamically populated category buttons -->
+                </div>
+            </div>
+
+            <!-- Wallpapers Grid -->
+            <div id="wallpaper-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Wallpaper cards populated by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-20">
+                <i class="fa-solid fa-film text-6xl text-slate-600 mb-4"></i>
+                <h3 class="text-xl font-bold text-slate-300">No Wallpapers Found</h3>
+                <p class="text-slate-500 text-sm mt-1">Try searching for something else or check back later for new uploads from developers.</p>
+            </div>
+        </section>
+
+
+        <!-- ================= DEVELOPER SECTION ================= -->
+        <section id="developer-section" class="hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            <!-- Login Sub-Section -->
+            <div id="dev-login-container" class="max-w-md mx-auto bg-marvel-card border border-slate-800 rounded-2xl shadow-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="inline-flex bg-marvel-red/10 text-marvel-red p-4 rounded-full mb-3 border border-marvel-red/30">
+                        <i class="fa-solid fa-shield-halved text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-white">Developer Portal</h2>
+                    <p class="text-xs text-slate-400 mt-1">Authorized access only for administrators</p>
+                </div>
+
+                <form onsubmit="handleLoginSubmit(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Login ID (Email)</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input type="email" id="login-email" required placeholder="Enter Login ID" class="w-full bg-slate-900 border border-slate-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input type="password" id="login-password" required placeholder="••••••••••••" class="w-full bg-slate-900 border border-slate-700 text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1.5">Note: Password validation is strictly case-sensitive.</p>
+                    </div>
+
+                    <div id="login-error" class="hidden bg-red-950/50 border border-red-800 text-red-200 text-xs p-3 rounded-lg flex items-center space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-marvel-red"></i>
+                        <span id="login-error-text">Invalid credentials. Please check your email and password.</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-marvel-red hover:bg-marvel-darkRed text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                        <span>Secure Login</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Dashboard Sub-Section (After Login) -->
+            <div id="dev-dashboard-container" class="hidden space-y-8">
+                <!-- Dashboard Top Banner -->
+                <div class="bg-marvel-card border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-circle text-[8px]"></i> Authenticated Session
+                            </span>
+                            <span class="text-xs text-slate-400">User: anandishaan2011@gmail.com</span>
+                        </div>
+                        <h2 class="text-2xl font-black text-white">Developer Control Center</h2>
+                        <p class="text-xs text-slate-400 mt-1">Ownership Rights: <strong class="text-slate-200">gamingwithishaan11@gmail.com</strong> (Zero upload restrictions)</p>
+                    </div>
+                    <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                        <i class="fa-solid fa-right-from-bracket text-marvel-red"></i>
+                        <span>Logout Session</span>
+                    </button>
+                </div>
+
+                <!-- Tabs for Dev Portal -->
+                <div class="flex items-center space-x-2 border-b border-slate-800 pb-4">
+                    <button onclick="switchDevTab('upload')" id="dev-tab-btn-upload" class="px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider bg-marvel-red text-white transition">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Upload Wallpaper
+                    </button>
+                    <button onclick="switchDevTab('categories')" id="dev-tab-btn-categories" class="px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider bg-slate-800 text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-tags mr-1.5"></i> Manage Categories
+                    </button>
+                    <button onclick="switchDevTab('wallpapers')" id="dev-tab-btn-wallpapers" class="px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider bg-slate-800 text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-images mr-1.5"></i> Manage Wallpapers (<span id="dev-wp-count">0</span>)
+                    </button>
+                </div>
+
+                <!-- Tab 1: Upload Wallpaper Form -->
+                <div id="dev-panel-upload" class="bg-marvel-card border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <h3 class="text-lg font-black text-white mb-6 flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-plus text-marvel-red"></i>
+                        <span>Upload New Marvel Wallpaper</span>
+                    </h3>
+
+                    <form onsubmit="handleWallpaperUpload(event)" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Wallpaper Title -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Wallpaper Title</label>
+                                <input type="text" id="upload-title" required placeholder="e.g., Avengers Endgame Final Battle" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                            </div>
+
+                            <!-- Device Type Selection -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Device Format</label>
+                                <select id="upload-device" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                                    <option value="mobile">Mobile (Portrait 9:16)</option>
+                                    <option value="laptop">Laptop (Landscape 16:9)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Category Selection -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Category</label>
+                                <select id="upload-category" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                                    <!-- Populated dynamically -->
+                                </select>
+                                <p class="text-[11px] text-slate-500 mt-1">You can create new categories in the "Manage Categories" tab.</p>
+                            </div>
+
+                            <!-- Quick New Category Inline -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Or Create New Category Instantly</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="quick-new-category" placeholder="e.g. Deadpool" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                                    <button type="button" onclick="quickAddCategory()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-xl text-xs font-bold border border-slate-700 whitespace-nowrap">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Source Selection -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Image Source (No Size Restriction)</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Option A: File Upload -->
+                                <div class="border-2 border-dashed border-slate-700 hover:border-marvel-red rounded-xl p-4 text-center bg-slate-900/50 transition cursor-pointer relative">
+                                    <input type="file" id="upload-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewSelectedFile(this)">
+                                    <div id="file-drop-text" class="py-2">
+                                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-marvel-red mb-1"></i>
+                                        <p class="text-xs font-semibold text-slate-300">Click to browse or drop image file</p>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">Supports PNG, JPG, WEBP (No size limit)</p>
+                                    </div>
+                                </div>
+
+                                <!-- Option B: Image URL -->
+                                <div>
+                                    <input type="url" id="upload-url" placeholder="Or paste direct image URL (https://...)" class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm mb-2">
+                                    <p class="text-[11px] text-slate-500">Provide either an image file upload or a direct image URL.</p>
+                                </div>
+                            </div>
+                            <!-- Image Preview Box -->
+                            <div id="image-preview-container" class="hidden mt-4 relative w-full h-40 bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center">
+                                <img id="image-preview-tag" src="" alt="Preview" class="h-full object-contain">
+                                <button type="button" onclick="clearImagePreview()" class="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-lg text-xs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4 border-t border-slate-800 flex justify-end">
+                            <button type="submit" class="bg-marvel-red hover:bg-marvel-darkRed text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition flex items-center space-x-2">
+                                <i class="fa-solid fa-upload"></i>
+                                <span>Publish Wallpaper Instantly</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Manage Categories -->
+                <div id="dev-panel-categories" class="hidden bg-marvel-card border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <h3 class="text-lg font-black text-white mb-6 flex items-center space-x-2">
+                        <i class="fa-solid fa-tags text-marvel-red"></i>
+                        <span>Manage Categories</span>
+                    </h3>
+
+                    <div class="flex space-x-3 mb-6">
+                        <input type="text" id="new-category-input" placeholder="Enter new category name..." class="flex-grow bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-marvel-red text-sm">
+                        <button onclick="addNewCategoryFromTab()" class="bg-marvel-red hover:bg-marvel-darkRed text-white px-6 py-3 rounded-xl font-bold text-sm transition">Add Category</button>
+                    </div>
+
+                    <div id="categories-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Tab 3: Manage Wallpapers -->
+                <div id="dev-panel-wallpapers" class="hidden bg-marvel-card border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <h3 class="text-lg font-black text-white mb-6 flex items-center space-x-2">
+                        <i class="fa-solid fa-images text-marvel-red"></i>
+                        <span>Manage Uploaded Wallpapers</span>
+                    </h3>
+
+                    <div id="dev-wallpapers-list" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-marvel-black border-t border-slate-800 py-8 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="bg-marvel-red text-white font-black px-2 py-1 rounded text-xs">MARVEL HUB INDIA</span>
+                <span>&copy; 2026 All Rights Reserved.</span>
+            </div>
+            <div>
+                <p>Official Ownership: <span class="text-slate-300 font-semibold">gamingwithishaan11@gmail.com</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Size Image Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center">
+            <button onclick="closeModal()" class="absolute -top-12 right-0 bg-slate-800 hover:bg-slate-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border border-slate-700 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="modal-image" src="" alt="Wallpaper Preview" class="max-h-[75vh] w-auto object-contain rounded-xl shadow-2xl border border-slate-800 mb-4">
+            <div class="flex items-center justify-between w-full bg-marvel-card p-4 rounded-xl border border-slate-800">
+                <div>
+                    <h4 id="modal-title" class="font-bold text-white text-base">Wallpaper Title</h4>
+                    <p id="modal-meta" class="text-xs text-slate-400 mt-0.5">Category &bull; Device</p>
+                </div>
+                <a id="modal-download-btn" href="#" download="marvel-wallpaper.jpg" class="bg-marvel-red hover:bg-marvel-darkRed text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-sm">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download HD</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Default Pre-loaded Wallpapers
+        const DEFAULT_WALLPAPERS = [
+            {
+                id: 'wp-1',
+                title: 'Avengers Endgame Final Stand',
+                category: 'Avengers',
+                device: 'laptop',
+                url: 'https://images.unsplash.com/photo-1635863138275-d9b33299680b?q=80&w=1600&auto=format&fit=crop',
+                date: '2026-01-10'
+            },
+            {
+                id: 'wp-2',
+                title: 'Spider-Man Multiverse Leap',
+                category: 'Spider-Man',
+                device: 'mobile',
+                url: 'https://images.unsplash.com/photo-1604200213928-ba3cf4fc8436?q=80&w=800&auto=format&fit=crop',
+                date: '2026-01-12'
+            },
+            {
+                id: 'wp-3',
+                title: 'Iron Man Arc Reactor Armor',
+                category: 'Iron Man',
+                device: 'laptop',
+                url: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=1600&auto=format&fit=crop',
+                date: '2026-01-15'
+            },
+            {
+                id: 'wp-4',
+                title: 'Thor God of Thunder Lightning',
+                category: 'Thor',
+                device: 'mobile',
+                url: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop',
+                date: '2026-01-18'
+            },
+            {
+                id: 'wp-5',
+                title: 'Black Panther Wakanda Forever',
+                category: 'Black Panther',
+                device: 'laptop',
+                url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1600&auto=format&fit=crop',
+                date: '2026-01-20'
+            },
+            {
+                id: 'wp-6',
+                title: 'Guardians of the Galaxy Awesome Mix',
+                category: 'Guardians',
+                device: 'mobile',
+                url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop',
+                date: '2026-01-22'
+            }
+        ];
+
+        const DEFAULT_CATEGORIES = ['All', 'Avengers', 'Spider-Man', 'Iron Man', 'Thor', 'Black Panther', 'Guardians', 'Doctor Strange'];
+
+        // App State
+        let wallpapers = JSON.parse(localStorage.getItem('marvel_wallpapers')) || DEFAULT_WALLPAPERS;
+        let categories = JSON.parse(localStorage.getItem('marvel_categories')) || DEFAULT_CATEGORIES;
+        let currentDeviceFilter = 'all';
+        let currentCategoryFilter = 'All';
+        let currentSearchQuery = '';
+        let isLoggedIn = localStorage.getItem('marvel_logged_in') === 'true';
+        let stagedBase64Image = '';
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderWallpapers();
+            updateDevNavState();
+            
+            if (isLoggedIn) {
+                document.getElementById('dev-login-container').classList.add('hidden');
+                document.getElementById('dev-dashboard-container').classList.remove('hidden');
+                populateDevDropdowns();
+                renderDevWallpapersList();
+                renderDevCategoriesList();
+            }
+        });
+
+        // Toast Notification Function
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            if (isError) {
+                iconEl.className = 'fa-solid fa-triangle-exclamation text-marvel-red text-xl';
+            } else {
+                iconEl.className = 'fa-solid fa-circle-check text-emerald-400 text-xl';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // View Switcher (Viewer vs Developer)
+        function switchView(viewName) {
+            const viewerSec = document.getElementById('viewer-section');
+            const devSec = document.getElementById('developer-section');
+            const viewerBtn = document.getElementById('nav-viewer-btn');
+            const devBtn = document.getElementById('nav-dev-btn');
+
+            if (viewName === 'viewer') {
+                viewerSec.classList.remove('hidden');
+                devSec.classList.add('hidden');
+                viewerBtn.className = 'px-4 py-2 rounded-lg font-bold text-sm bg-marvel-red text-white shadow-md transition flex items-center space-x-2';
+                devBtn.className = 'px-4 py-2 rounded-lg font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2';
+            } else {
+                viewerSec.classList.add('hidden');
+                devSec.classList.remove('hidden');
+                devBtn.className = 'px-4 py-2 rounded-lg font-bold text-sm bg-marvel-red text-white shadow-md transition flex items-center space-x-2';
+                viewerBtn.className = 'px-4 py-2 rounded-lg font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2';
+            }
+        }
+
+        function handleDevNavClick() {
+            switchView('developer');
+        }
+
+        // Device Filter Handling
+        function setDeviceFilter(device) {
+            currentDeviceFilter = device;
+            document.querySelectorAll('.device-tab').forEach(btn => {
+                btn.className = 'device-tab px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition text-slate-400 hover:text-white';
+            });
+            document.getElementById(`dev-tab-${device}`).className = 'device-tab px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition bg-marvel-red text-white shadow';
+            renderWallpapers();
+        }
+
+        // Category Filter Handling
+        function setCategoryFilter(cat) {
+            currentCategoryFilter = cat;
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                if (btn.dataset.category === cat) {
+                    btn.className = 'category-pill px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-marvel-red text-white shadow';
+                } else {
+                    btn.className = 'category-pill px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800';
+                }
+            });
+            renderWallpapers();
+        }
+
+        function filterWallpapers() {
+            currentSearchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            renderWallpapers();
+        }
+
+        // Render Categories Pills in Viewer
+        function renderCategories() {
+            const container = document.getElementById('category-pills');
+            container.innerHTML = '';
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.dataset.category = cat;
+                btn.className = (currentCategoryFilter === cat)
+                    ? 'category-pill px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-marvel-red text-white shadow'
+                    : 'category-pill px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800';
+                btn.textContent = cat;
+                btn.onclick = () => setCategoryFilter(cat);
+                container.appendChild(btn);
+            });
+        }
+
+        // Render Wallpapers Grid
+        function renderWallpapers() {
+            const grid = document.getElementById('wallpaper-grid');
+            const emptyState = document.getElementById('empty-state');
+            grid.innerHTML = '';
+
+            let filtered = wallpapers.filter(wp => {
+                const matchesDevice = (currentDeviceFilter === 'all' || wp.device === currentDeviceFilter);
+                const matchesCategory = (currentCategoryFilter === 'All' || wp.category === currentCategoryFilter);
+                const matchesSearch = wp.title.toLowerCase().includes(currentSearchQuery) || wp.category.toLowerCase().includes(currentSearchQuery);
+                return matchesDevice && matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(wp => {
+                const card = document.createElement('div');
+                card.className = 'group bg-marvel-card rounded-2xl overflow-hidden border border-slate-800 hover:border-marvel-red/50 transition-all duration-300 shadow-xl flex flex-col';
+                
+                const aspectClass = wp.device === 'mobile' ? 'aspect-[9/16]' : 'aspect-[16/9]';
+
+                card.innerHTML = `
+                    <div class="relative ${aspectClass} overflow-hidden bg-slate-900 cursor-pointer" onclick="openModal('${wp.id}')">
+                        <img src="${wp.url}" alt="${wp.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x400/131c2e/ffffff?text=Marvel+Wallpaper'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                            <span class="text-xs text-white font-semibold bg-marvel-red/80 px-2.5 py-1 rounded-lg backdrop-blur-sm">Click to Preview</span>
+                        </div>
+                        <div class="absolute top-3 left-3 flex gap-2">
+                            <span class="bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-white/10">${wp.device}</span>
+                            <span class="bg-marvel-red/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${wp.category}</span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow justify-between">
+                        <h3 class="font-bold text-sm text-white mb-3 line-clamp-1">${wp.title}</h3>
+                        <button onclick="downloadWallpaper('${wp.url}', '${wp.title}')" class="w-full bg-slate-900 hover:bg-marvel-red text-slate-200 hover:text-white font-bold py-2.5 rounded-xl border border-slate-800 hover:border-marvel-red transition flex items-center justify-center space-x-2 text-xs">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Download HD</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Download Wallpaper Handler
+        function downloadWallpaper(url, title) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.download = `${title.replace(/\s+/g, '_')}_MarvelHubIndia.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast(`Downloading "${title}"...`);
+        }
+
+        // Preview Modal
+        function openModal(id) {
+            const wp = wallpapers.find(w => w.id === id);
+            if (!wp) return;
+
+            document.getElementById('modal-image').src = wp.url;
+            document.getElementById('modal-title').textContent = wp.title;
+            document.getElementById('modal-meta').textContent = `${wp.category} &bull; ${wp.device.toUpperCase()} Format`;
+            
+            const dlBtn = document.getElementById('modal-download-btn');
+            dlBtn.onclick = () => downloadWallpaper(wp.url, wp.title);
+
+            document.getElementById('preview-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('preview-modal').classList.add('hidden');
+        }
+
+        // ================= DEVELOPER LOGIN & AUTH =================
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
+
+            // Strictly case-sensitive validation as requested
+            if (email === 'anandishaan2011@gmail.com' && password === 'Ishaan11112011@') {
+                isLoggedIn = true;
+                localStorage.setItem('marvel_logged_in', 'true');
+                errorBox.classList.add('hidden');
+                showToast('Login successful! Welcome Developer.');
+                
+                document.getElementById('dev-login-container').classList.add('hidden');
+                document.getElementById('dev-dashboard-container').classList.remove('hidden');
+                updateDevNavState();
+                populateDevDropdowns();
+                renderDevWallpapersList();
+                renderDevCategoriesList();
+            } else {
+                errorBox.classList.remove('hidden');
+                errorText.textContent = 'Incorrect credentials. Email or password (case-sensitive) is invalid.';
+                showToast('Authentication failed', true);
+            }
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            localStorage.setItem('marvel_logged_in', 'false');
+            document.getElementById('dev-dashboard-container').classList.add('hidden');
+            document.getElementById('dev-login-container').classList.remove('hidden');
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            updateDevNavState();
+            showToast('Logged out successfully');
+        }
+
+        function updateDevNavState() {
+            const btnText = document.getElementById('dev-btn-text');
+            if (isLoggedIn) {
+                btnText.textContent = 'Admin Dashboard';
+            } else {
+                btnText.textContent = 'Developer Portal';
+            }
+        }
+
+        // ================= DEVELOPER DASHBOARD TABS & ACTIONS =================
+        function switchDevTab(tabName) {
+            const panels = ['upload', 'categories', 'wallpapers'];
+            panels.forEach(p => {
+                document.getElementById(`dev-panel-${p}`).classList.add('hidden');
+                document.getElementById(`dev-tab-btn-${p}`).className = 'px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider bg-slate-800 text-slate-400 hover:text-white transition';
+            });
+
+            document.getElementById(`dev-panel-${tabName}`).classList.remove('hidden');
+            document.getElementById(`dev-tab-btn-${tabName}`).className = 'px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider bg-marvel-red text-white transition';
+
+            if (tabName === 'wallpapers') {
+                renderDevWallpapersList();
+            } else if (tabName === 'categories') {
+                renderDevCategoriesList();
+            }
+        }
+
+        function populateDevDropdowns() {
+            const catSelect = document.getElementById('upload-category');
+            catSelect.innerHTML = '';
+            categories.filter(c => c !== 'All').forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                catSelect.appendChild(opt);
+            });
+            document.getElementById('dev-wp-count').textContent = wallpapers.length;
+        }
+
+        // File Selection & Base64 Converter
+        function previewSelectedFile(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    stagedBase64Image = e.target.result;
+                    document.getElementById('image-preview-tag').src = stagedBase64Image;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('file-drop-text').innerHTML = `<i class="fa-solid fa-check text-2xl text-emerald-400 mb-1"></i><p class="text-xs font-semibold text-emerald-400">${file.name} ready</p>`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearImagePreview() {
+            stagedBase64Image = '';
+            document.getElementById('upload-file').value = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('file-drop-text').innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-2xl text-marvel-red mb-1"></i><p class="text-xs font-semibold text-slate-300">Click to browse or drop image file</p><p class="text-[10px] text-slate-500 mt-0.5">Supports PNG, JPG, WEBP (No size limit)</p>`;
+        }
+
+        // Quick Add Category from Upload Form
+        function quickAddCategory() {
+            const input = document.getElementById('quick-new-category');
+            const val = input.value.trim();
+            if (!val) return;
+
+            if (!categories.includes(val)) {
+                categories.push(val);
+                localStorage.setItem('marvel_categories', JSON.stringify(categories));
+                populateDevDropdowns();
+                renderCategories();
+                input.value = '';
+                showToast(`Category "${val}" created successfully!`);
+            } else {
+                showToast('Category already exists!', true);
+            }
+        }
+
+        // Add Category from Categories Tab
+        function addNewCategoryFromTab() {
+            const input = document.getElementById('new-category-input');
+            const val = input.value.trim();
+            if (!val) return;
+
+            if (!categories.includes(val)) {
+                categories.push(val);
+                localStorage.setItem('marvel_categories', JSON.stringify(categories));
+                populateDevDropdowns();
+                renderCategories();
+                renderDevCategoriesList();
+                input.value = '';
+                showToast(`Category "${val}" created successfully!`);
+            } else {
+                showToast('Category already exists!', true);
+            }
+        }
+
+        function renderDevCategoriesList() {
+            const list = document.getElementById('categories-list');
+            list.innerHTML = '';
+            categories.filter(c => c !== 'All').forEach(cat => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-white';
+                div.innerHTML = `
+                    <span>${cat}</span>
+                    <button onclick="deleteCategory('${cat}')" class="text-slate-500 hover:text-marvel-red transition"><i class="fa-solid fa-trash"></i></button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteCategory(cat) {
+            categories = categories.filter(c => c !== cat);
+            localStorage.setItem('marvel_categories', JSON.stringify(categories));
+            renderCategories();
+            populateDevDropdowns();
+            renderDevCategoriesList();
+            showToast(`Category "${cat}" deleted.`);
+        }
+
+        // Wallpaper Upload Form Submission
+        function handleWallpaperUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('upload-title').value.trim();
+            const device = document.getElementById('upload-device').value;
+            const category = document.getElementById('upload-category').value;
+            const urlInput = document.getElementById('upload-url').value.trim();
+
+            let finalImageUrl = stagedBase64Image || urlInput;
+
+            if (!finalImageUrl) {
+                showToast('Please upload an image file or provide an image URL.', true);
+                return;
+            }
+
+            const newWallpaper = {
+                id: 'wp-' + Date.now(),
+                title: title,
+                category: category,
+                device: device,
+                url: finalImageUrl,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            wallpapers.unshift(newWallpaper);
+            localStorage.setItem('marvel_wallpapers', JSON.stringify(wallpapers));
+
+            // Reset form
+            document.getElementById('upload-title').value = '';
+            document.getElementById('upload-url').value = '';
+            clearImagePreview();
+            document.getElementById('dev-wp-count').textContent = wallpapers.length;
+
+            renderWallpapers();
+            showToast('Wallpaper published successfully to live viewer site!');
+            switchDevTab('wallpapers');
+        }
+
+        // Manage Wallpapers List in Dev Portal
+        function renderDevWallpapersList() {
+            const container = document.getElementById('dev-wallpapers-list');
+            container.innerHTML = '';
+            document.getElementById('dev-wp-count').textContent = wallpapers.length;
+
+            if (wallpapers.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-500 py-8 text-xs">No wallpapers uploaded yet.</p>`;
+                return;
+            }
+
+            wallpapers.forEach(wp => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <img src="${wp.url}" class="w-14 h-14 object-cover rounded-lg border border-slate-700" onerror="this.src='https://placehold.co/100x100/131c2e/ffffff?text=IMG'">
+                        <div>
+                            <h4 class="font-bold text-sm text-white line-clamp-1">${wp.title}</h4>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="bg-marvel-red/20 text-marvel-red text-[10px] font-bold px-2 py-0.5 rounded uppercase">${wp.category}</span>
+                                <span class="bg-slate-800 text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${wp.device}</span>
+                                <span class="text-[10px] text-slate-500">${wp.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="deleteWallpaper('${wp.id}')" class="bg-red-950/40 hover:bg-red-900 text-red-300 border border-red-800/60 p-2.5 rounded-xl transition text-xs flex items-center space-x-1.5">
+                        <i class="fa-solid fa-trash"></i>
+                        <span class="hidden sm:inline">Delete</span>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function deleteWallpaper(id) {
+            wallpapers = wallpapers.filter(w => w.id !== id);
+            localStorage.setItem('marvel_wallpapers', JSON.stringify(wallpapers));
+            renderWallpapers();
+            renderDevWallpapersList();
+            showToast('Wallpaper deleted successfully.');
+        }
+    </script>
+</body>
+</html>
